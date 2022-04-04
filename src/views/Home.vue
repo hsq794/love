@@ -1,74 +1,184 @@
 <template>
-  <div style="color: #666;font-size: 14px;">
-    <div style="padding-bottom: 20px">
+  <div style="color: #666;font-size: 16px;">
+<!--    <div style="padding-bottom: 20px">
       <b>欢迎你！{{ user.nickname }}</b>
-    </div>
-    <el-card>
-      青哥出手，马上拥有
-      <el-divider />
-      虎虎生威，虎年大吉
-    </el-card>
-    <div style="height: 1px; background: #ddd; margin: 20px 0"/>
-
-    <el-row :gutter="30">
-      <el-col :span="12">
-        <div style="padding: 20px 0; font-size: 20px">小白做毕设专用框架</div>
-        <div>
-          这是一款专门针对毕设系统设计的框架，代码简单，结构清晰，如果你是小白，一定不要错过哦
-        </div>
-        <div class="m-10"><el-button type="danger"><i class="el-icon-coin"></i> 免费开源</el-button></div>
-        <div class="m-10"><el-button type="primary"><i class="el-icon-s-custom"></i> 交流QQ群：529910361</el-button></div>
-        <div class="m-10">
-          <el-button type="primary"><i class="el-icon-link"></i> <a style="color: #fff" href="https://gitee.com/xqnode/pure-design">Gitee源码</a></el-button>
-          <el-button type="primary"><i class="el-icon-link"></i> <a style="color: #fff" href="https://www.bilibili.com/video/BV1U44y1W77D">B站视频讲解</a></el-button>
-        </div>
-      </el-col>
-      <el-col :span="12">
-        <div style="padding: 20px 0; font-size: 20px">技术栈</div>
-        <el-row>
-          <el-col :span="12" style="line-height: 30px">
-            <div><b>后端</b></div>
-            <div>SpringBoot2</div>
-            <div>Hutool</div>
-            <div>Poi</div>
-            <div>Lombok</div>
-            <div>Mybatis/Mybatis-plus</div>
-          </el-col>
-          <el-col :span="12" style="line-height: 30px">
-            <b>前端</b>
-            <div>Vue2</div>
-            <div>Vue-Router</div>
-            <div>VueX</div>
-            <div>ElementUI</div>
-            <div>Axios</div>
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
-
-    <el-row>
-      <el-col :span="6">
-        <el-card>
-          <div slot="header" class="clearfix">
-            <span>喝杯咖啡</span>
+    </div>-->
+<!--    <b>欢迎您! <span style="color:green;font-size: 18px">{{user.cname}}</span> 来到爱心捐赠管理系统!</b>-->
+    <el-row :gutter="10" style="margin-bottom: 60px">
+      <el-col :span="8">
+        <el-card style="color: #409EFF">
+          <div><i class="el-icon-user-solid" /> 用户总数</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">
+            {{userList}}
           </div>
-          <div style="text-align: center">
-            <img src="https://img-blog.csdnimg.cn/9250639d4fc74eb385e5975f58bef0da.png" alt="">
-            <div class="pd-10">您可以请作者喝杯咖啡以资鼓励</div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card style="color: #f56c6c">
+          <div><i class="el-icon-money" /> 物品总量</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">
+            {{goodsNum}}
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card style="color: #67C23A">
+          <div><i class="el-icon-bank-card" /> 爱心值总量</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">
+            {{loveNum}}
           </div>
         </el-card>
       </el-col>
     </el-row>
+    <el-row>
+    <el-col :span="12">
+      <div id="main" style="width: 700px; height: 450px" ref="chart"></div>
+    </el-col>
+
+    <el-col :span="12">
+      <div id="pie" style="width: 600px; height: 400px"></div>
+    </el-col>
+    </el-row>
+
   </div>
 </template>
 
 <script>
+var echarts = require("echarts");
 export default {
   name: "Home",
   data() {
     return {
-      user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {}
+      user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
+      userList:'',
+      goodsNum:'',
+      loveNum:''
     }
+  },
+  mounted() {
+    var mainOption={
+          title: {
+            text: "物品数量统计",
+            left: 'center'
+          },
+        xAxis: {
+          type: 'category',
+          axisLabel: {
+            interval:0
+          },
+          data: ['A', 'B', 'C']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [120, 200, 150],
+            type: 'line'
+          }
+        ],
+          tooltip: {
+            //trigger: 'item'
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left'
+          },
+          // xAxis: {
+          //   type:'category',
+          //   data: []
+          // },
+          // yAxis: {
+          //   type:'value'
+          // },
+          // series: [
+          //   {
+          //     name: "数量",
+          //     type: "bar",
+          //     data: [],
+          //     barWidth: '45%',
+          //     barCategoryGap: '5%',
+          //     itemStyle: {
+          //       barBorderRadius: 2,
+          //       borderWidth: 0.5,
+          //       borderType: 'solid',
+          //       borderColor: '#73c0de',
+          //       shadowColor: '#5470c6',
+          //       shadowBlur: 1
+          //     }
+          //   }
+          // ]
+
+    };
+
+    var pieOption = {
+      title:{
+        text: "物品总爱心值统计",
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b} : {c} ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'right'
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: '50%',
+         // center: ['70%', '30%'],
+          data: [],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        },
+
+
+      ]
+    };
+
+    this.request.get("/goods/findAllGoods").then(res => {
+      console.log(res);
+      var mainDataX=[];
+      var mainDataS=[];
+      var pieData=[];
+      console.log(res.data)
+      res.data.forEach(element=>{
+        mainDataX.push(element.gname);
+        mainDataS.push(element.gnumber);
+        pieData.push({name:element.gname,value:(element.glove)*(element.gnumber)});
+      });
+      //console.log(mainDataX);
+      //console.log(mainDataS);
+      console.log(pieData);
+      mainOption.xAxis.data=mainDataX;
+      mainOption.series[0].data=mainDataS;
+      echarts.init(this.$refs.chart).setOption(mainOption);
+      pieOption.series[0].data=pieData;
+      var pieDom = document.getElementById('pie');
+      var pieChart = echarts.init(pieDom);
+      pieChart.setOption(pieOption);
+
+    });
+    this.request.get("/goods/findChartNum").then(res=>{
+      console.log(res);
+      this.goodsNum=res.data[0];
+      this.loveNum=res.data[1];
+      this.userList=res.data[2];
+    })
+
   }
 }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+
+</style>
+

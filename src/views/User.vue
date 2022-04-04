@@ -4,7 +4,7 @@
       用户名:&nbsp;&nbsp;<el-input style="width: 200px" placeholder="请输入用户名" suffix-icon="el-icon-search" v-model="username"></el-input>
       爱心值:&nbsp;&nbsp;<el-input style="width: 200px" placeholder="请输入爱心值" suffix-icon="el-icon-message" class="ml-5" v-model="loveValue"></el-input>
       地址:&nbsp;&nbsp;<el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" class="ml-5" v-model="address"></el-input>
-      &nbsp;&nbsp;<el-button class="ml-5" type="primary" @click="load">搜索</el-button>
+      &nbsp;&nbsp;<el-button class="ml-5" type="primary" @click="search">搜索</el-button>
       &nbsp;<el-button type="warning" @click="reset">重置</el-button>
     </div>
 
@@ -22,8 +22,8 @@
       >
         <el-button type="danger" slot="reference">批量删除 <i class="el-icon-remove-outline"></i></el-button>
       </el-popconfirm>
-      <el-button type="primary" class="ml-5">导入 <i class="el-icon-bottom"></i></el-button>
-      <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>
+<!--      <el-button type="primary" class="ml-5">导入 <i class="el-icon-bottom"></i></el-button>
+      <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>-->
     </div>
 
     <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'"  @selection-change="handleSelectionChange">
@@ -39,15 +39,17 @@
           <el-button type="success" @click="handleEdit(scope.row)">编辑 <i class="el-icon-edit"></i></el-button>
           <el-popconfirm
               class="ml-5"
+              placement="left-end"
               confirm-button-text='确定'
               cancel-button-text='我再想想'
               icon="el-icon-info"
               icon-color="red"
               title="您确定删除吗？"
-              @confirm="del(scope.row.id)"
+              @confirm="del(scope.row.uid)"
           >
             <el-button type="danger" slot="reference">删除 <i class="el-icon-remove-outline"></i></el-button>
           </el-popconfirm>
+<!--          <el-button type="danger" @click="open(scope.row.uid)" >按钮</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -64,18 +66,26 @@
     </div>
 
     <el-dialog title="用户信息" :visible.sync="dialogFormVisible" width="30%" >
-      <el-form label-width="80px" size="small">
+      <el-form label-width="80px"  size="small">
         <el-form-item label="用户名">
           <el-input v-model="form.uname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户性别">
-          <el-input v-model="form.usex" autocomplete="off"></el-input>
+<!--          <el-input v-model="form.usex" autocomplete="off"></el-input>-->
+          <el-select v-model="form.usex" placeholder="请选择">
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="爱心值">
           <el-input v-model="form.ulove"  :disabled="true" placeholder="0" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.uphoto" autocomplete="off"></el-input>
+        <el-form-item prop="uphoto" label="电话">
+          <el-input v-model="form.uphoto"  maxlength="11" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="地址">
           <el-input v-model="form.uaddress" autocomplete="off"></el-input>
@@ -104,7 +114,20 @@ export default {
       loveValue:"",
       form: {},
       dialogFormVisible: false,
-      multipleSelection: []
+      multipleSelection: [],
+      options: [{
+        value: '男',
+        label: '男'
+      }, {
+        value: '女',
+        label: '女'
+      }],
+     /* rules: {
+        uphoto: [
+          {required: true, message: '请输入电话号码', trigger: 'blur'},
+          {min: 11, max: 11, message: '电话号码11位', trigger: 'blur'}
+        ]
+      }*/
     }
   },
   created() {
@@ -113,6 +136,7 @@ export default {
   //decodeURL
   methods: {
     load() {
+
       this.request.get("/user/userListPage", {
         params: {
           pageNum: this.pageNum,
@@ -122,7 +146,7 @@ export default {
           address: this.address,
         }
       }).then(res => {
-        console.log(res)
+        //console.log(res)
 
         this.tableData = res.data.records
        // console.log(this.tableData)
@@ -130,14 +154,33 @@ export default {
 
       })
     },
+    search(){
+      this.request.get("/user/userListPage", {
+        params: {
+          pageNum: 1,
+          pageSize: this.pageSize,
+          username: this.username,
+          loveValue: this.loveValue,
+          address: this.address,
+        }
+      }).then(res => {
+        //console.log(res)
+
+        this.tableData = res.data.records
+        // console.log(this.tableData)
+        this.total = res.data.total
+
+      })
+    },
     save() {
       this.request.post("/user/addOrUpdate", this.form).then(res => {
-        if (res) {
+        if (res.code==200) {
           this.$message.success("保存成功")
           this.dialogFormVisible = false
           this.load()
+          this.search()
         } else {
-          this.$message.error("保存失败")
+          this.$message.error(res.msg)
         }
       })
     },
@@ -150,23 +193,23 @@ export default {
       this.dialogFormVisible = true
     },
     del(id) {
-      this.request.delete("/user/" + id).then(res => {
-        if (res) {
+      this.request.delete("/user/del/" + id).then(res => {
+        if (res.code==200) {
           this.$message.success("删除成功")
-          this.load()
+          this.search()
         } else {
           this.$message.error("删除失败")
         }
       })
     },
     handleSelectionChange(val) {
-      console.log(val)
+
       this.multipleSelection = val
     },
     delBatch() {
-      let ids = this.multipleSelection.map(v => v.id)  // [{}, {}, {}] => [1,2,3]
+      let ids = this.multipleSelection.map(v => v.uid)  // [{}, {}, {}] => [1,2,3]
       this.request.post("/user/del/batch", ids).then(res => {
-        if (res) {
+        if (res.code==200) {
           this.$message.success("批量删除成功")
           this.load()
         } else {
@@ -174,6 +217,31 @@ export default {
         }
       })
     },
+    /*open(id){
+      console.log("id:"+id);
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+
+      }).then(() => {
+        console.log(id);
+        this.$confirm({
+          method:this.del(id)
+        })
+        this.$message({
+          method:this.del(res.id),
+          type: 'success',
+          //message: '删除成功!',
+
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+         // message: '已取消删除'
+        });
+      });
+    },*/
     reset() {
       this.username = ""
       this.loveValue = ""
@@ -181,12 +249,12 @@ export default {
       this.load()
     },
     handleSizeChange(pageSize) {
-      console.log(pageSize)
+
       this.pageSize = pageSize
       this.load()
     },
     handleCurrentChange(pageNum) {
-      console.log(pageNum)
+
       this.pageNum = pageNum
       this.load()
     }

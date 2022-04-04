@@ -1,135 +1,73 @@
 <template>
- <div style="height: 100%">
-   <el-container style="min-height: 100vh;">
-     <el-aside width="200px" style="background-color: rgb(238, 241, 246); height: 100%">
-<!--       菜单样式 -->
-       <el-menu :default-openeds="['1', '3']" style="min-height: 100%; overflow-x: hidden"
-                background-color="rgb(48,65,86)"
-                text-color="#fff"
-                active-text-color="#ffd04b"
-                :collapse-transition="false"
-                :collapse="isCollapse"
-       >
-         <el-submenu index="1">
-           <template slot="title"><i class="el-icon-message"></i>导航一</template>
-           <el-menu-item-group>
-             <template slot="title">分组一</template>
-             <el-menu-item index="1-1">选项1</el-menu-item>
-             <el-menu-item index="1-2">选项2</el-menu-item>
-           </el-menu-item-group>
-           <el-menu-item-group title="分组2">
-             <el-menu-item index="1-3">选项3</el-menu-item>
-           </el-menu-item-group>
-           <el-submenu index="1-4">
-             <template slot="title">选项4</template>
-             <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-           </el-submenu>
-         </el-submenu>
-         <el-submenu index="2">
-           <template slot="title"><i class="el-icon-menu"></i>导航二</template>
-           <el-menu-item-group>
-             <template slot="title">分组一</template>
-             <el-menu-item index="2-1">选项1</el-menu-item>
-             <el-menu-item index="2-2">选项2</el-menu-item>
-           </el-menu-item-group>
-           <el-menu-item-group title="分组2">
-             <el-menu-item index="2-3">选项3</el-menu-item>
-           </el-menu-item-group>
-           <el-submenu index="2-4">
-             <template slot="title">选项4</template>
-             <el-menu-item index="2-4-1">选项4-1</el-menu-item>
-           </el-submenu>
-         </el-submenu>
-         <el-submenu index="3">
-           <template slot="title"><i class="el-icon-setting"></i>导航三</template>
-           <el-menu-item-group>
-             <template slot="title">分组一</template>
-             <el-menu-item index="3-1">选项1</el-menu-item>
-             <el-menu-item index="3-2">选项2</el-menu-item>
-           </el-menu-item-group>
-           <el-menu-item-group title="分组2">
-             <el-menu-item index="3-3">选项3</el-menu-item>
-           </el-menu-item-group>
-           <el-submenu index="3-4">
-             <template slot="title">选项4</template>
-             <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-           </el-submenu>
-         </el-submenu>
-       </el-menu>
-     </el-aside>
+  <el-container style="min-height: 100vh">
 
-     <el-container>
-       <el-header style="font-size: 12px;border: 1px solid #ccc; line-height: 60px" >
-         <el-dropdown style="width: 70px;cursor: pointer">
-           <i class="el-icon-setting" style="margin-right: 15px"></i>
-           <el-dropdown-menu slot="dropdown">
-             <el-dropdown-item>个人信息</el-dropdown-item>
-             <el-dropdown-item>退出</el-dropdown-item>
-             <el-dropdown-item>删除</el-dropdown-item>
-           </el-dropdown-menu>
-         </el-dropdown>
-         <span>王小虎</span>
-       </el-header>
+    <el-aside :width="sideWidth + 'px'" style="box-shadow: 2px 0 6px rgb(0 21 41 / 35%);">
+      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow" />
+    </el-aside>
 
-       <el-main>
-         <el-table :data="tableData">
-           <el-table-column prop="date" label="日期" width="140">
-           </el-table-column>
-           <el-table-column prop="name" label="姓名" width="120">
-           </el-table-column>
-           <el-table-column prop="address" label="地址">
-           </el-table-column>
-         </el-table>
-       </el-main>
-     </el-container>
-   </el-container>
- </div>
+    <el-container>
+      <el-header style="border-bottom: 1px solid #ccc;">
+        <Header :collapseBtnClass="collapseBtnClass" @asideCollapse="collapse" :user="user" />
+      </el-header>
+
+      <el-main>
+        <!--        表示当前页面的子路由会在 <router-view /> 里面展示-->
+        <router-view @refreshUser="getUser" />
+      </el-main>
+
+    </el-container>
+  </el-container>
 </template>
 
 <script>
 
+import Aside from "@/components/Aside";
+import Header from "@/components/Header";
 
 export default {
   name: 'Home',
- /* components: {
-    HelloWorld
-  },*/
-  data(){
-    const item = {
-      date: '2016-05-02',
-      name: '王小虎',
-      address: '上海市普陀区金沙江路 1518 弄'
-    };
-
+  data() {
     return {
-      tableData: Array(10).fill(item),
-      collapseBtnClass: "el-icon-s-fold",
+      collapseBtnClass: 'el-icon-s-fold',
       isCollapse: false,
+      sideWidth: 200,
+      logoTextShow: true,
+      user: {}
     }
   },
-  created(){
-    this.load();
+  components: {
+    Aside,
+    Header
   },
-  methods:{
-
-    load(){
-      this.request.get("/controller/controllerList", {
-        params: {
-          /*pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          username: this.username,
-          email: this.email,
-          address: this.address,*/
-        }
-      }).then(res => {
-        console.log(res)
-        //this.tableData = res.data.records
-        // this.total = res.data.total
-
-      })
+  created() {
+    // 从后台获取最新的User数据
+    this.getUser()
+  },
+  methods: {
+    collapse() {  // 点击收缩按钮触发
+      this.isCollapse = !this.isCollapse
+      if (this.isCollapse) {  // 收缩
+        this.sideWidth = 64
+        this.collapseBtnClass = 'el-icon-s-unfold'
+        this.logoTextShow = false
+      } else {   // 展开
+        this.sideWidth = 200
+        this.collapseBtnClass = 'el-icon-s-fold'
+        this.logoTextShow = true
+      }
+    },
+    getUser() {
+      let cid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).cid : ""
+      if (cid) {
+        // 从后台获取User数据
+        this.request.get("/controller/cid/" + cid).then(res => {
+          // 重新赋值后台的最新User数据
+         // console.log(res);
+          this.user = res.data
+        })
+      }
     }
-
-
   }
 }
 </script>
+

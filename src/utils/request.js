@@ -1,5 +1,11 @@
 import axios from 'axios'
+import Vue from "vue";
+import ElementUI from "element-ui";
+import router from "@/router";
+Vue.use(ElementUI,{size:"small"})
 
+
+axios.defaults.headers['Content-Type']= 'application/json;charset=utf-8';
 const request = axios.create({
     baseURL: 'http://localhost:9091',
     timeout: 5000
@@ -10,8 +16,10 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-
-    // config.headers['token'] = user.token;  // 设置请求头
+    let user=localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")):null
+    if(user){
+        config.headers['token'] = user.token;  // 设置请求头
+    }
     return config
 }, error => {
     return Promise.reject(error)
@@ -22,6 +30,7 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(
     response => {
         let res = response.data;
+        //console.log("code:"+res.code);
         // 如果是返回的文件
         if (response.config.responseType === 'blob') {
             return res
@@ -29,6 +38,14 @@ request.interceptors.response.use(
         // 兼容服务端返回的字符串数据
         if (typeof res === 'string') {
             res = res ? JSON.parse(res) : res
+        }
+        // 当权限验证不通过的时候给出提示
+        if (res.code === '402') {
+            ElementUI.Message({
+                message: res.msg,
+                type: 'error'
+            });
+            router.push("/login");
         }
         return res;
     },

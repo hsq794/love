@@ -19,7 +19,7 @@ const store = new Vuex.Store({
             router.push("/login")
 
             // 重置路由
-            resetRouter()
+           // resetRouter()
         }
     }
 })
