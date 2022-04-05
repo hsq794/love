@@ -4,10 +4,10 @@
       <div style="margin: 20px 0; text-align: center; font-size: 24px"><b>注 册</b></div>
       <el-form :model="user" :rules="rules" ref="userForm">
         <el-form-item prop="cname">
-          <el-input placeholder="请输入账号" size="medium" style="margin: 5px 0" prefix-icon="el-icon-user" v-model="user.cname"></el-input>
+          <el-input placeholder="请输入账号" size="medium" style="margin: 5px 0" prefix-icon="el-icon-user" v-model="user.uname"></el-input>
         </el-form-item>
         <el-form-item prop="cpassword">
-          <el-input placeholder="请输入密码" size="medium" style="margin: 5px 0" prefix-icon="el-icon-lock" show-password v-model="user.cpassword"></el-input>
+          <el-input placeholder="请输入密码" size="medium" style="margin: 5px 0" prefix-icon="el-icon-lock" show-password v-model="user.upassword"></el-input>
         </el-form-item>
         <el-form-item prop="confirmPassword">
           <el-input placeholder="请确认密码" size="medium" style="margin: 5px 0" prefix-icon="el-icon-lock" show-password v-model="user.confirmPassword"></el-input>
@@ -28,11 +28,11 @@ export default {
     return {
       user: {},
       rules: {
-        cname: [
+        uname: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 2, max: 10, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
-        cpassword: [
+        upassword: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
         ],
@@ -47,11 +47,11 @@ export default {
     login() {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {  // 表单校验合法
-          if (this.user.cpassword !== this.user.confirmPassword) {
+          if (this.user.upassword !== this.user.confirmPassword) {
             this.$message.error("两次输入的密码不一致")
             return false
           }
-          this.request.post("/controller/register", this.user).then(res => {
+          this.request.post("/user/register", this.user).then(res => {
             if(res.code === '200') {
               this.$message.success("注册成功")
             } else {

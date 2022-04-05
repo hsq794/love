@@ -57,12 +57,12 @@ export default {
       }
     },
     getUser() {
-      let cid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).cid : ""
+      let cid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).uid : ""
       if (cid) {
         // 从后台获取User数据
-        this.request.get("/controller/cid/" + cid).then(res => {
+        this.request.get("/user/uid/" + cid).then(res => {
           // 重新赋值后台的最新User数据
-         // console.log(res);
+          //console.log(res);
           this.user = res.data
         })
       }

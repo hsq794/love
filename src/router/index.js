@@ -18,10 +18,13 @@ const routes = [
     children: [
       { path: 'home', name: '主页', component: () => import('../views/Home.vue')},
       { path: 'user', name: '用户管理', component: () => import('../views/User.vue')},
+      { path: 'role', name: '角色管理', component: () => import('../views/Role.vue')},
+      { path: 'menu', name: '菜单管理', component: () => import('../views/Menu')},
       { path: 'donation', name: '捐赠管理', component: () => import('../views/Donation.vue')},
       { path: 'receive', name: '获赠管理', component: () => import('../views/Receive.vue')},
       { path: 'goods', name: '物品管理', component: () => import('../views/Goods.vue')},
-      // { path: 'echarts', name: '数据报表', component: () => import('../views/Echarts.vue')},
+      { path: 'echarts', name: '数据报表', component: () => import('../views/Echarts.vue')},
+      { path: 'person', name: '个人信息', component: () => import('../views/Person.vue')},
       { path: 'password', name: '修改密码', component: () => import('../views/Password')},
 
     ]

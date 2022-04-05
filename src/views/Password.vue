@@ -2,8 +2,8 @@
   <el-card style="width: 500px;">
     <el-form label-width="120px" size="small" :model="form" :rules="rules" ref="pass">
 
-      <el-form-item label="原密码" prop="cpassword">
-        <el-input v-model="form.cpassword" autocomplete="off" show-password></el-input>
+      <el-form-item label="原密码" prop="upassword">
+        <el-input v-model="form.upassword" autocomplete="off" show-password></el-input>
       </el-form-item>
       <el-form-item label="新密码" prop="newPassword">
         <el-input v-model="form.newPassword" autocomplete="off" show-password></el-input>
@@ -26,7 +26,7 @@ export default {
       form: {},
       user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
       rules: {
-        cpassword: [
+        upassword: [
           { required: true, message: '请输入原密码', trigger: 'blur' },
           { min: 3, message: '长度不少于3位', trigger: 'blur' }
         ],
@@ -42,7 +42,7 @@ export default {
     }
   },
   created() {
-    this.form.cid = this.user.cid
+    this.form.uid = this.user.uid
   },
   methods: {
     save() {
@@ -52,7 +52,7 @@ export default {
             this.$message.error("2次输入的新密码不相同")
             return false
           }
-          this.request.post("/controller/password", this.form).then(res => {
+          this.request.post("/user/updatePassword", this.form).then(res => {
             if (res.code === '200') {
               this.$message.success("修改成功")
               this.$store.commit("logout")

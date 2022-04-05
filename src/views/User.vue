@@ -72,13 +72,19 @@
         </el-form-item>
         <el-form-item label="用户性别">
 <!--          <el-input v-model="form.usex" autocomplete="off"></el-input>-->
-          <el-select v-model="form.usex" placeholder="请选择">
+          <el-select v-model="form.usex" placeholder="请选择" style="width: 100%">
             <el-option
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
             </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="角色">
+<!--          <el-input v-model="form.role"  :disabled="true" placeholder="0" autocomplete="off"></el-input>-->
+          <el-select clearable v-model="form.role" placeholder="请选择角色" style="width: 100%">
+            <el-option v-for="item in roles" :key="item.name" :label="item.name" :value="item.flag"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="爱心值">
@@ -122,6 +128,7 @@ export default {
         value: '女',
         label: '女'
       }],
+      roles:[],
      /* rules: {
         uphoto: [
           {required: true, message: '请输入电话号码', trigger: 'blur'},
@@ -152,6 +159,9 @@ export default {
        // console.log(this.tableData)
         this.total = res.data.total
 
+      });
+      this.request.get("/role/findAll").then(res=>{
+        this.roles=res.data;
       })
     },
     search(){
