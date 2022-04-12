@@ -22,8 +22,12 @@
       >
         <el-button type="danger" slot="reference">批量删除 <i class="el-icon-remove-outline"></i></el-button>
       </el-popconfirm>
-<!--      <el-button type="primary" class="ml-5">导入 <i class="el-icon-bottom"></i></el-button>
-      <el-button type="primary">导出 <i class="el-icon-top"></i></el-button>-->
+      &nbsp;
+      <el-upload :action="'http://' + serverIp + ':9091/user/import'" :show-file-list="false" accept="xlsx" :on-success="handleExcelImportSuccess" style="display: inline-block">
+        <el-button type="primary" class="ml-5">导入 <i class="el-icon-bottom"></i></el-button>
+      </el-upload>
+      &nbsp;
+      <el-button type="primary" @click="exp" class="ml-5">导出 <i class="el-icon-top"></i></el-button>
     </div>
 
     <el-table :data="tableData" border stripe :header-cell-class-name="'headerBg'"  @selection-change="handleSelectionChange">
@@ -106,11 +110,14 @@
 </template>
 
 <script>
+import {serverIp} from "../../public/config";
+
 export default {
   name: "User",
   data() {
     return {
       tableData: [],
+      serverIp: serverIp,
       total: 0,
       pageNum: 1,
       pageSize: 5,
@@ -227,31 +234,6 @@ export default {
         }
       })
     },
-    /*open(id){
-      console.log("id:"+id);
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-
-      }).then(() => {
-        console.log(id);
-        this.$confirm({
-          method:this.del(id)
-        })
-        this.$message({
-          method:this.del(res.id),
-          type: 'success',
-          //message: '删除成功!',
-
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-         // message: '已取消删除'
-        });
-      });
-    },*/
     reset() {
       this.username = ""
       this.loveValue = ""
@@ -266,6 +248,16 @@ export default {
     handleCurrentChange(pageNum) {
 
       this.pageNum = pageNum
+      this.load()
+    },
+    exp() {
+      window.open(`http://${serverIp}:9091/user/export`)
+      // this.request.get("/user/export").then(res=>{
+      //   this.$message.success("导出成功")
+      // })
+    },
+    handleExcelImportSuccess() {
+      this.$message.success("导入成功")
       this.load()
     }
   }
