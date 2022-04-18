@@ -46,7 +46,7 @@
 <script>
 var echarts = require("echarts");
 export default {
-  name: "Home",
+  name: "Echarts",
   data() {
     return {
       user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},

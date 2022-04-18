@@ -136,6 +136,7 @@ export default {
         label: '女'
       }],
       roles:[],
+      user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
      /* rules: {
         uphoto: [
           {required: true, message: '请输入电话号码', trigger: 'blur'},
@@ -252,8 +253,21 @@ export default {
     },
     exp() {
       window.open(`http://${serverIp}:9091/user/export`)
-      // this.request.get("/user/export").then(res=>{
-      //   this.$message.success("导出成功")
+     /* this.request.get("/user/export").then(res=>{
+        this.$message.success("导出成功")
+      })*/
+      // this.request({
+      //   url:'/user/export',
+      //   method:'get',
+      //   responseType:'blob',
+      //   headers:{ 'Authorization': decodeURIComponent(this.user.token)}
+      // }).then(res=>{
+      //   if(res.code==200){
+      //     this.$message.success("导出成功")
+      //   }else{
+      //     this.$message.success("导出失败")
+      //   }
+      //
       // })
     },
     handleExcelImportSuccess() {
