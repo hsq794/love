@@ -26,7 +26,8 @@ const routes = [
       { path: 'echarts', name: '数据报表', component: () => import('../views/Echarts.vue')},
       { path: 'person', name: '个人信息', component: () => import('../views/Person.vue')},
       { path: 'password', name: '修改密码', component: () => import('../views/Password')},
-
+      { path: 'notice', name: '公告配置', component: () => import('../views/Notice.vue')},
+      { path: 'files', name: '文件管理', component: () => import('../views/Files.vue')}
     ]
   },
   {

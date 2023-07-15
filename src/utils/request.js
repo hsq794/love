@@ -8,7 +8,7 @@ Vue.use(ElementUI,{size:"small"})
 axios.defaults.headers['Content-Type']= 'application/json;charset=utf-8';
 const request = axios.create({
     baseURL: 'http://localhost:9091',
-    timeout: 5000
+    timeout: 6000
 })
 //
 // request 拦截器
